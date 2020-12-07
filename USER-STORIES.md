@@ -8,11 +8,9 @@
 - As buyer *ISBAT see all posts about properties.
 - As buyer *ISBAT register myself as a seller. (sign up)
 - As buyer *ISBAT login and become seller. (Authentication)
-- As buyer *ISBAT see all post of individual sellers.
 - As seller *ISBAT create property post for sell.
 - As seller *ISBAT update my property post details.
 - As seller *ISBAT delete my property post.
-- As seller *ISBAT update my profile details.
 - As a reader *ISBAT see an error page if I enter wrong URL. (Error Handling)
 
 ### Abbreviation
