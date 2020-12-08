@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class=" {padding: 50px} ">
+    {% for post in posts %}
+    <div>{{post.location}}</div>
+    <div>{{post.containt}}</div>
+    {% endfor %}
+</div>
+    
+{% endblock content %}
