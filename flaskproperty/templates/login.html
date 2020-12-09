@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>hello login</h1>
 <div>
     <form method="POST" action="">
         <!-- CSRF Token -->
@@ -48,14 +47,5 @@
         Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
     </small>
 </div>
-
-  <div class="form-floating mb-3">
-    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-    <label for="floatingInput">Email address</label>
-  </div>
-  <div class="form-floating">
-    <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-    <label for="floatingPassword">Password</label>
-  </div>
 
 {% endblock content %}

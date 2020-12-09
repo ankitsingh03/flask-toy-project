@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,\
-                    BooleanField
+                    BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo,\
                                ValidationError
 from flaskproperty.models import User
@@ -45,3 +45,9 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+
+class PostForm(FlaskForm):
+    location = StringField('Location', validators=[DataRequired()])
+    detail = TextAreaField('Detail', validators=[DataRequired()])
+    submit = SubmitField('Post')
