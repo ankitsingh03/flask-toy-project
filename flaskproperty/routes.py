@@ -3,6 +3,9 @@ from flaskproperty import app, db, bcrypt
 from flaskproperty.forms import RegistrationForm, LoginForm, PostForm
 from flaskproperty.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
+import secrets
+from PIL import Image
+import os
 
 
 @app.route('/')
@@ -69,12 +72,32 @@ def logout():
     return redirect(url_for('home'))
 
 
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/photos', picture_fn)
+
+    output_size = (300, 300)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+    i.save(picture_path)
+
+    return picture_fn
+
+
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(location=form.location.data, detail=form.detail.data,
+        photo_file = form.photo.data
+        if photo_file:
+            photo_file = save_picture(photo_file)
+        post = Post(location=form.location.data,
+                    detail=form.detail.data,
+                    image=photo_file,
                     author=current_user)
         db.session.add(post)
         db.session.commit()
@@ -100,6 +123,10 @@ def update_post(post_id):
     if form.validate_on_submit():
         post.location = form.location.data
         post.detail = form.detail.data
+        if form.photo.data:
+            post.image = save_picture(form.photo.data)
+        else:
+            post.image = post.image
         db.session.commit()
         flash('Your post has been updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
@@ -120,3 +147,16 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
+
+
+@app.route("/user/<string:username>")
+def user_posts(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    # I have to apply count queary
+    posts = Post.query.filter_by(author=user)\
+        .order_by(Post.date_posted.desc()).all()
+    # try to incude empty notification
+    heading = f"{username}'s post"
+    return render_template('user_posts.html',
+                           heading=heading,
+                           posts=posts, user=user)

@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField,\
                     BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo,\
@@ -50,4 +51,6 @@ class LoginForm(FlaskForm):
 class PostForm(FlaskForm):
     location = StringField('Location', validators=[DataRequired()])
     detail = TextAreaField('Detail', validators=[DataRequired()])
+    photo = FileField('Update Profile Picture',
+                      validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Post')

@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>{{ heading }}</h2>
+    <h1>{{ heading }}</h1>
     {% for post in posts %}
-    <div class="card mb-3" style="max-width: 900px;">
+      <div class="card mb-3" style="max-width: 900px;">
         <div class="row g-0">
           <div class="col-md-4">
             <img src="{{ url_for('static', filename='photos/' + post.image) }}" alt="...">
@@ -16,7 +16,7 @@
                 Location: {{ post.location }}
             {% endif %}
             <br>
-            Seller: <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+            Seller: {{ post.author.username }}
               </h5>
               <p class="card-text">{{ post.detail }}</p>
               <p class="card-text"><small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small></p>

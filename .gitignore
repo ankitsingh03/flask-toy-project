@@ -1,7 +1,5 @@
 .vscode
 **/__pycache__
-**/site.db
-**/migrations
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
