@@ -10,10 +10,12 @@ from flaskproperty.models import User
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired(),
-                                       Length(min=2, max=20)])
+                                       Length(min=2, max=10)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password',
+                             validators=[DataRequired(),
+                                         Length(min=2, max=10)])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[
                                          DataRequired(),
@@ -43,14 +45,18 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField('Email address',
                         validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password',
+                             validators=[DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 
 class PostForm(FlaskForm):
-    location = StringField('Location', validators=[DataRequired()])
-    detail = TextAreaField('Detail', validators=[DataRequired()])
+    location = StringField('Location',
+                           validators=[DataRequired(), Length(min=2, max=30)])
+    detail = TextAreaField('Detail',
+                           validators=[DataRequired(),
+                                       Length(min=50, max=500)])
     photo = FileField('Update Profile Picture',
                       validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Post')

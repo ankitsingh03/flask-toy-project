@@ -1,28 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>{{ heading }}</h2>
-    {% for post in posts %}
-    <div class="card mb-3" style="max-width: 900px;">
-        <div class="row g-0">
-          <div class="col-md-4">
-            <img src="{{ url_for('static', filename='photos/' + post.image) }}" alt="...">
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title">
-                {% if post.author == current_user %}
+  <h2>{{ heading }}</h2>
+  {% for post in posts %}
+    <div class="card mb-3" style="max-width: 1000px;">
+      <div class="row g-0">
+
+        <div class="col-md-4">
+          <img src="{{ url_for('static', filename='photos/' + post.image) }}" alt="...">
+        </div>
+
+        <div class="col-md-8 inter-cross">
+          <div class="card-body">
+            <h5 class="card-title">
+              {% if post.author == current_user %}
                 Location: {{ post.location }} <a href="{{ url_for('post', post_id=post.id) }}">edit</a>
-            {% else %}
+              {% else %}
                 Location: {{ post.location }}
-            {% endif %}
-            <br>
-            Seller: <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
-              </h5>
-              <p class="card-text">{{ post.detail }}</p>
-              <p class="card-text"><small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small></p>
-            </div>
+              {% endif %}
+              <br>
+              Seller: <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+              <small class="text-muted card-text">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+            </h5>
+            <p class="card-text">{{ post.detail }}</p>
           </div>
         </div>
+        
       </div>
-    {% endfor %}
+    </div>
+  {% endfor %}
 {% endblock content %}

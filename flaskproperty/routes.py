@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request
 from flaskproperty import app, db, bcrypt
 from flaskproperty.forms import RegistrationForm, LoginForm, PostForm
 from flaskproperty.models import User, Post
@@ -27,13 +27,15 @@ def register():
     '''
     help to create new account for seller
     '''
+    # If logged user try to access login funtion. this will redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)\
                          .decode('utf-8')
-        seller = User(username=form.username.data, email=form.email.data,
+        seller = User(username=form.username.data,
+                      email=form.email.data,
                       password=hashed_password)
         db.session.add(seller)
         db.session.commit()
@@ -47,7 +49,7 @@ def login():
     '''
     seller can login and post the porperty detail
     '''
-    # it will check user is login or not
+    # If logged user try to access login funtion. this will redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
 
@@ -78,7 +80,7 @@ def save_picture(form_picture):
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/photos', picture_fn)
 
-    output_size = (300, 300)
+    output_size = (350, 350)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
@@ -117,8 +119,6 @@ def post(post_id):
 @login_required
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
-    # if post.author != current_user:
-    #     abort(403)
     form = PostForm()
     if form.validate_on_submit():
         post.location = form.location.data
@@ -141,8 +141,6 @@ def update_post(post_id):
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    # if post.author != current_user:
-    #     abort(403)
     db.session.delete(post)
     db.session.commit()
     flash('Your post has been deleted!', 'success')
@@ -155,8 +153,22 @@ def user_posts(username):
     # I have to apply count queary
     posts = Post.query.filter_by(author=user)\
         .order_by(Post.date_posted.desc()).all()
-    # try to incude empty notification
     heading = f"{username}'s post"
     return render_template('user_posts.html',
                            heading=heading,
                            posts=posts, user=user)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('errors/404.html', title='Page Not Found'), 404
+
+
+@app.errorhandler(403)
+def error_403(error):
+    return render_template('errors/403.html', title='Not Found'), 403
+
+
+@app.errorhandler(500)
+def error_500(error):
+    return render_template('errors/500.html', title='Not Found'), 500
