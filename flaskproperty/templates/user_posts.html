@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h2>{{ heading }}</h2>
+  <h2>{{ heading }}'s Posts</h2>
   {% for post in posts %}
-    <div class="card mb-3" style="max-width: 1000px;">
+    <div class="card mb-3" style="max-width: 1200px;">
       <div class="row g-0">
         <div class="col-md-4">
           <img src="{{ url_for('static', filename='photos/' + post.image) }}" alt="...">
         </div>
         <div class="col-md-8 inter-cross">
-          <div class="card-body">
+          <div class="card-body pl-1">
             <h5 class="card-title">
               {% if post.author == current_user %}
                 Location: {{ post.location }} <a href="{{ url_for('post', post_id=post.id) }}">edit</a>

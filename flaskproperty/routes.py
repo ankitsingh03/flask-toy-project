@@ -1,6 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from flaskproperty import app, db, bcrypt
-from flaskproperty.forms import RegistrationForm, LoginForm, PostForm
+from flaskproperty.forms import RegistrationForm, LoginForm, PostForm,\
+    UpdateAccountForm
 from flaskproperty.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 import secrets
@@ -11,15 +12,16 @@ import os
 @app.route('/')
 @app.route('/home')
 def home():
+    # Fatching all the posts in post table
     posts = Post.query.order_by(Post.date_posted.desc()).all()
-    heading = 'welcome! choose your favourite Property.'
+    heading = 'Welcome! Choose Your Favourite Property.'
     return render_template('home.html', title='Home',
                            heading=heading, posts=posts)
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html', title='about')
+    return render_template('about.html', title='About')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -27,13 +29,13 @@ def register():
     '''
     help to create new account for seller
     '''
-    # If logged user try to access login funtion. this will redirect to home
+    # If logged user try to access login funtion. This will redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)\
-                         .decode('utf-8')
+                                .decode('utf-8')
         seller = User(username=form.username.data,
                       email=form.email.data,
                       password=hashed_password)
@@ -55,10 +57,11 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
+        # Fatching data in database according to email id
         seller = User.query.filter_by(email=form.email.data).first()
+        # If seller and password present in DB return True
         if seller and bcrypt.check_password_hash(seller.password,
                                                  form.password.data):
-            # if user is matched return true
             login_user(seller, remember=form.remember.data)
             return redirect(url_for('home'))
         else:
@@ -75,17 +78,16 @@ def logout():
 
 
 def save_picture(form_picture):
+    # generating random string
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/photos', picture_fn)
-
+    # resizing the photo
     output_size = (350, 350)
     i = Image.open(form_picture)
     i.thumbnail(output_size)
     i.save(picture_path)
-    i.save(picture_path)
-
     return picture_fn
 
 
@@ -105,8 +107,8 @@ def new_post():
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post',
-                           form=form, heading='Write new post')
+    return render_template('create_post.html', title='Create Post',
+                           form=form, heading='Write New Post for Buyers')
 
 
 @app.route("/post/<int:post_id>")
@@ -125,8 +127,6 @@ def update_post(post_id):
         post.detail = form.detail.data
         if form.photo.data:
             post.image = save_picture(form.photo.data)
-        else:
-            post.image = post.image
         db.session.commit()
         flash('Your post has been updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
@@ -153,14 +153,31 @@ def user_posts(username):
     # I have to apply count queary
     posts = Post.query.filter_by(author=user)\
         .order_by(Post.date_posted.desc()).all()
-    heading = f"{username}'s post"
     return render_template('user_posts.html',
-                           heading=heading,
-                           posts=posts, user=user)
+                           title='My Post',
+                           heading=username,
+                           posts=posts,
+                           user=user)
+
+
+@app.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('account.html', title='Account', form=form)
 
 
 @app.errorhandler(404)
-def page_not_found(error):
+def error_404(error):
     return render_template('errors/404.html', title='Page Not Found'), 404
 
 

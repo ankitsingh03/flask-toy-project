@@ -1,0 +1,3 @@
+[flake8]
+ignore = E402,F401
+exclude = env, migrations

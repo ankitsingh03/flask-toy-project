@@ -34,10 +34,13 @@
                 <!-- checking user is login or not -->
                 {% if current_user.is_authenticated %}
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('user_posts', username=current_user.username) }}">Your Post</a>
+                    <a class="nav-link" href="{{ url_for('user_posts', username=current_user.username) }}">My Post</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ url_for('new_post') }}">Create Post</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('account') }}">My Account</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>

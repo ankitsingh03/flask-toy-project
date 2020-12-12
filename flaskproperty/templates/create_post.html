@@ -4,6 +4,8 @@
     <form method="POST" action="" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div class="form-group">
+            <h5>Note: It is recommended to type exact details in the detail box for better reach.
+                you can type your mobile number also. so, that buyer can directly connect with you.</h5><br>
             {{ form.location.label(class="form-control-label") }}
             {% if form.location.errors %}
                 {{ form.location(class="form-control form-control-lg is-invalid") }}
