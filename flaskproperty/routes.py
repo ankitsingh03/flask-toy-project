@@ -32,6 +32,7 @@ def register():
     # If logged user try to access login funtion. This will redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
+
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)\
@@ -39,10 +40,13 @@ def register():
         seller = User(username=form.username.data,
                       email=form.email.data,
                       password=hashed_password)
+
         db.session.add(seller)
         db.session.commit()
+
         flash(f"Account is created { form.username.data }", 'success')
         return redirect(url_for('login'))
+
     return render_template('register.html', title='Register', form=form)
 
 
@@ -78,6 +82,10 @@ def logout():
 
 
 def save_picture(form_picture):
+    '''
+    This function save the image at definate path, \
+    resize the image and encrypt the image file name and return.
+    '''
     # generating random string
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -94,25 +102,35 @@ def save_picture(form_picture):
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
+    '''
+    This function helps to create new post for seller.
+    '''
     form = PostForm()
     if form.validate_on_submit():
         photo_file = form.photo.data
         if photo_file:
+            # Take encrypt file name
             photo_file = save_picture(photo_file)
         post = Post(location=form.location.data,
                     detail=form.detail.data,
                     image=photo_file,
                     author=current_user)
+
         db.session.add(post)
         db.session.commit()
+
         flash('Your account has been updated!', 'success')
         return redirect(url_for('home'))
+
     return render_template('create_post.html', title='Create Post',
                            form=form, heading='Write New Post for Buyers')
 
 
 @app.route("/post/<int:post_id>")
 def post(post_id):
+    '''
+    This function shows the single post to seller for update and delete.
+    '''
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', title=post.location, post=post)
 
@@ -122,6 +140,7 @@ def post(post_id):
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm()
+
     if form.validate_on_submit():
         post.location = form.location.data
         post.detail = form.detail.data
