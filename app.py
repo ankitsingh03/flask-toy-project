@@ -2,17 +2,21 @@ from flaskproperty import app
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
 
 
 @app.cli.command()
 def dummyuser():
-    from flaskproperty import db
+    from flaskproperty import db, bcrypt
     from flaskproperty.models import User
+    hashed_password = bcrypt.generate_password_hash('123')\
+                            .decode('utf-8')
     seller1 = User(username='seller1',
-                   email="seller1@demo.com", password="123")
+                   email="seller1@demo.com", password=hashed_password)
+    hashed_password = bcrypt.generate_password_hash('123')\
+                            .decode('utf-8')
     seller2 = User(username='seller2',
-                   email="seller2@demo.com", password="123")
+                   email="seller2@demo.com", password=hashed_password)
     db.session.add(seller1)
     db.session.add(seller2)
     db.session.commit()
@@ -20,7 +24,7 @@ def dummyuser():
 
 @app.cli.command()
 def dummypost():
-    from flaskproperty import db
+    from flaskproperty import db, bcrypt
     from flaskproperty.models import User, Post
     post1 = Post(location='Bangalore',
                  detail="Enjoy a blissful living experience in JP North.\
