@@ -24,7 +24,7 @@ def dummyuser():
 
 @app.cli.command()
 def dummypost():
-    from flaskproperty import db, bcrypt
+    from flaskproperty import db
     from flaskproperty.models import User, Post
     post1 = Post(location='Bangalore',
                  detail="Enjoy a blissful living experience in JP North.\
